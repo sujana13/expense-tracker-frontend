@@ -58,6 +58,7 @@ function Expenses() {
   }, []);
 
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   
 
   const fetchExpenses = async () => {
@@ -190,6 +191,24 @@ function Expenses() {
       link.click();
   
       link.remove();
+  
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await api.get(
+        "/expenses",
+        {
+          params: {
+            search: search
+          }
+        }
+      );
+  
+      setExpenses(response.data);
   
     } catch (error) {
       console.error(error);
@@ -332,6 +351,33 @@ function Expenses() {
   </Grid>
 
 </Grid>
+<TextField
+  label="Search Expenses"
+  value={search}
+  onChange={(e) =>
+    setSearch(e.target.value)
+  }
+  sx={{
+    mr: 2,
+    backgroundColor: "white",
+    borderRadius: 1
+  }}
+/>
+
+<Button
+  variant="contained"
+  onClick={handleSearch}
+>
+  Search
+</Button>
+
+<Button
+  variant="outlined"
+  sx={{ ml: 2 }}
+  onClick={fetchExpenses}
+>
+  Reset
+</Button>
 
       <TableContainer component={Paper}>
         <Table>
