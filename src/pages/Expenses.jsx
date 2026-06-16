@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import MenuItem from "@mui/material/MenuItem";
+
 import {
   Container,
   Typography,
@@ -25,6 +27,10 @@ import TextField from "@mui/material/TextField";
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
 
+  const [categories, setCategories] = useState([]);
+
+  const [editingExpenseId, setEditingExpenseId] = useState(null);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -36,6 +42,7 @@ function Expenses() {
 
   useEffect(() => {
     fetchExpenses();
+    fetchCategories();
   }, []);
 
   const [open, setOpen] = useState(false);
@@ -45,6 +52,19 @@ function Expenses() {
       const response = await api.get("/expenses");
 
       setExpenses(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get(
+        "/categories"
+      );
+  
+      setCategories(response.data);
+  
     } catch (error) {
       console.error(error);
     }
@@ -74,11 +94,18 @@ function Expenses() {
 
   const handleSave = async () => {
     try {
-      await api.post(
-        "/expenses",
-        formData
-      );
-  
+        if (editingExpenseId) {
+            await api.put(
+              `/expenses/${editingExpenseId}`,
+              formData
+            );
+          } else {
+            await api.post(
+              "/expenses",
+              formData
+            );
+          }
+      setEditingExpenseId(null);
       setOpen(false);
   
       fetchExpenses();
@@ -86,6 +113,21 @@ function Expenses() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleEdit = (expense) => {
+    setEditingExpenseId(expense.id);
+  
+    setFormData({
+      title: expense.title,
+      description: expense.description,
+      amount: expense.amount,
+      expense_date: expense.expense_date,
+      payment_method: expense.payment_method,
+      category_id: expense.category_id
+    });
+  
+    setOpen(true);
   };
 
   return (
@@ -102,7 +144,9 @@ function Expenses() {
        sx={{ mb: 2 }}
        onClick={() => setOpen(true)}
        >
-  Add Expense
+  {editingExpenseId
+  ? "Edit Expense"
+  : "Add Expense"}
 </Button>
 
       <TableContainer component={Paper}>
@@ -144,6 +188,16 @@ function Expenses() {
                 </TableCell>
 
                 <TableCell>
+                <Button
+                   variant="contained"
+                   onClick={() =>
+                   handleEdit(expense)
+                   }
+                   sx={{ mr: 1 }}
+                   >
+                   Edit
+                </Button>
+
                 <Button
                    variant="contained"
                    color="error"
@@ -210,9 +264,9 @@ function Expenses() {
   }
 />
 
+
 <TextField
   label="Expense Date"
-  type="date"
   fullWidth
   margin="normal"
   value={formData.expense_date}
@@ -223,6 +277,7 @@ function Expenses() {
     })
   }
 />
+
 
 <TextField
   label="Payment Method"
@@ -238,7 +293,8 @@ function Expenses() {
 />
 
 <TextField
-  label="Category ID"
+  select
+  label="Category"
   fullWidth
   margin="normal"
   value={formData.category_id}
@@ -248,7 +304,16 @@ function Expenses() {
       category_id: e.target.value
     })
   }
-/>
+>
+  {categories.map((category) => (
+    <MenuItem
+      key={category.id}
+      value={category.id}
+    >
+      {category.name}
+    </MenuItem>
+  ))}
+</TextField>
 
   </DialogContent>
 
