@@ -8,6 +8,23 @@ import {
     Typography
   } from "@mui/material";
 
+  import {
+    PieChart,
+    Pie,
+    Cell,
+    Tooltip,
+    Legend,
+    ResponsiveContainer
+  } from "recharts";
+
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884D8"
+  ];
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -158,7 +175,6 @@ function Dashboard() {
   </Table>
 </TableContainer>
 
-{/* PASTE HERE */}
 
 <Typography
   variant="h5"
@@ -201,6 +217,51 @@ function Dashboard() {
 
   </Table>
 </TableContainer>
+
+<Typography
+  variant="h5"
+  sx={{ mt: 4, mb: 2 }}
+>
+  Expense Distribution
+</Typography>
+
+<Paper sx={{ p: 2 }}>
+  <ResponsiveContainer
+    width="100%"
+    height={300}
+  >
+    <PieChart>
+
+      <Pie
+        data={categorySummary}
+        dataKey="total_amount"
+        nameKey="category"
+        cx="50%"
+        cy="50%"
+        outerRadius={100}
+        label
+      >
+        {categorySummary.map(
+          (entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={
+                COLORS[
+                  index %
+                  COLORS.length
+                ]
+              }
+            />
+          )
+        )}
+      </Pie>
+
+      <Tooltip />
+      <Legend />
+
+    </PieChart>
+  </ResponsiveContainer>
+</Paper>
     </Container>
   );
 
