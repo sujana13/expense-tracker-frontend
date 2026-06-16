@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import Categories from "./pages/Categories";
 
+
 function App() {
   return (
     <BrowserRouter>
@@ -28,7 +29,12 @@ function App() {
           path="/categories"
           element={<Categories />}
         />
-      </Routes>
+
+        <Route
+          path="/expenses"
+          element={<Expenses />}
+        />
+        </Routes>
     </BrowserRouter>
   );
 }
