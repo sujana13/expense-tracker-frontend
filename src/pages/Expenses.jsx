@@ -164,6 +164,38 @@ function Expenses() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const response = await api.get(
+        "/expenses/export",
+        {
+          responseType: "blob"
+        }
+      );
+  
+      const url = window.URL.createObjectURL(
+        new Blob([response.data])
+      );
+  
+      const link = document.createElement("a");
+  
+      link.href = url;
+      link.setAttribute(
+        "download",
+        "expenses.csv"
+      );
+  
+      document.body.appendChild(link);
+  
+      link.click();
+  
+      link.remove();
+  
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Container sx={{ mt: 4 }}>
       <Typography
@@ -181,6 +213,14 @@ function Expenses() {
   {editingExpenseId
   ? "Edit Expense"
   : "Add Expense"}
+</Button>
+
+<Button
+  variant="outlined"
+  sx={{ ml: 2, mb:2 }}
+  onClick={handleExport}
+>
+  Export CSV
 </Button>
 
 <Grid container spacing={2} sx={{ mb: 2 }}>

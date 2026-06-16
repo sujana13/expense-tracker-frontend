@@ -21,6 +21,7 @@ import api from "../api/axios";
 function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [recentExpenses, setRecentExpenses] = useState([]);
+  const [categorySummary, setCategorySummary] = useState([]);
 
   useEffect(() => {
     fetchSummary();
@@ -29,8 +30,9 @@ function Dashboard() {
   useEffect(() => {
     fetchSummary();
     fetchRecentExpenses();
+    fetchCategorySummary();
   }, []);
-
+  
   const fetchSummary = async () => {
     try {
       const response = await api.get(
@@ -50,6 +52,21 @@ function Dashboard() {
       );
   
       setRecentExpenses(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchCategorySummary = async () => {
+    try {
+      const response = await api.get(
+        "/dashboard/category-summary"
+      );
+  
+      setCategorySummary(
+        response.data
+      );
+  
     } catch (error) {
       console.error(error);
     }
@@ -135,9 +152,59 @@ function Dashboard() {
           </TableBody>
         </Table>
       </TableContainer>
-  
+      <TableContainer component={Paper}>
+  <Table>
+    ...
+  </Table>
+</TableContainer>
+
+{/* PASTE HERE */}
+
+<Typography
+  variant="h5"
+  sx={{ mt: 4, mb: 2 }}
+>
+  Category Summary
+</Typography>
+
+<TableContainer component={Paper}>
+  <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell>
+          Category
+        </TableCell>
+
+        <TableCell>
+          Total Amount
+        </TableCell>
+      </TableRow>
+    </TableHead>
+
+    <TableBody>
+
+      {categorySummary.map((item) => (
+        <TableRow
+          key={item.category}
+        >
+          <TableCell>
+            {item.category}
+          </TableCell>
+
+          <TableCell>
+            ₹{item.total_amount}
+          </TableCell>
+        </TableRow>
+      ))}
+
+    </TableBody>
+
+  </Table>
+</TableContainer>
     </Container>
   );
+
+     
 }
 
 export default Dashboard;
