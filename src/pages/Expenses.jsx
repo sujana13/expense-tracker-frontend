@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
 
 import {
+    Grid
+  } from "@mui/material";
+
+import {
   Container,
   Typography,
   Paper,
@@ -40,12 +44,21 @@ function Expenses() {
     category_id: ""
   });
 
+  const [filters, setFilters] = useState({
+    category_id: "",
+    payment_method: "",
+    start_date: "",
+    end_date: ""
+  });
+
+
   useEffect(() => {
     fetchExpenses();
     fetchCategories();
   }, []);
 
   const [open, setOpen] = useState(false);
+  
 
   const fetchExpenses = async () => {
     try {
@@ -130,6 +143,27 @@ function Expenses() {
     setOpen(true);
   };
 
+
+  const loadAllExpenses = () => {
+    fetchExpenses();
+  };
+
+  const handleFilter = async () => {
+    try {
+      const response = await api.get(
+        "/expenses",
+        {
+          params: filters
+        }
+      );
+  
+      setExpenses(response.data);
+  
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Container sx={{ mt: 4 }}>
       <Typography
@@ -148,6 +182,116 @@ function Expenses() {
   ? "Edit Expense"
   : "Add Expense"}
 </Button>
+
+<Grid container spacing={2} sx={{ mb: 2 }}>
+
+  <Grid item xs={12} md={4}>
+    <TextField
+      select
+      fullWidth
+      label="Category"
+      sx={{
+        backgroundColor: "white",
+        borderRadius: 1
+      }}
+      value={filters.category_id}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          category_id: e.target.value
+        })
+      }
+    >
+      <MenuItem value="">
+        All Categories
+      </MenuItem>
+
+      {categories.map((category) => (
+        <MenuItem
+          key={category.id}
+          value={category.id}
+        >
+          {category.name}
+        </MenuItem>
+      ))}
+    </TextField>
+  </Grid>
+
+  <Grid item xs={12} md={3}>
+    <TextField
+      fullWidth
+      label="Payment Method"
+      sx={{
+        backgroundColor: "white",
+        borderRadius: 1
+      }}
+      value={filters.payment_method}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          payment_method: e.target.value
+        })
+      }
+    />
+  </Grid>
+
+  <Grid item xs={12} md={3}>
+  <TextField
+  label="From"
+  type="date"
+  fullWidth
+  sx={{
+    backgroundColor: "white",
+    borderRadius: 1
+  }}
+  value={filters.start_date}
+  onChange={(e) =>
+    setFilters({
+      ...filters,
+      start_date: e.target.value
+    })
+  }
+/>
+  </Grid>
+
+  <Grid item xs={12} md={3}>
+    <TextField
+      label="To"
+      fullWidth
+      type="date"
+
+      sx={{
+        backgroundColor: "white",
+        borderRadius: 1
+      }}
+      value={filters.end_date}
+      onChange={(e) =>
+        setFilters({
+          ...filters,
+          end_date: e.target.value
+        })
+      }
+    />
+  </Grid>
+
+  <Grid item xs={12} md={3}>
+    <Button
+      variant="contained"
+      onClick={handleFilter}
+      sx={{ mr: 2 }}
+    >
+      Filter
+    </Button>
+
+    <Button
+      variant="outlined"
+      onClick={loadAllExpenses}
+    >
+      Reset
+    </Button>
+  </Grid>
+
+</Grid>
 
       <TableContainer component={Paper}>
         <Table>
