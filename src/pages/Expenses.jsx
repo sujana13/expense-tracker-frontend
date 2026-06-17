@@ -28,12 +28,15 @@ import DialogActions from "@mui/material/DialogActions";
 
 import TextField from "@mui/material/TextField";
 
+import TablePagination from "@mui/material/TablePagination";
+
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
 
   const [categories, setCategories] = useState([]);
 
   const [editingExpenseId, setEditingExpenseId] = useState(null);
+
 
   const [formData, setFormData] = useState({
     title: "",
@@ -59,6 +62,9 @@ function Expenses() {
 
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   
 
   const fetchExpenses = async () => {
@@ -213,6 +219,23 @@ function Expenses() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleChangePage = (
+    event,
+    newPage
+  ) => {
+    setPage(newPage);
+  };
+  
+  const handleChangeRowsPerPage = (
+    event
+  ) => {
+    setRowsPerPage(
+      parseInt(event.target.value, 10)
+    );
+  
+    setPage(0);
   };
 
   return (
@@ -394,7 +417,12 @@ function Expenses() {
           </TableHead>
 
           <TableBody>
-            {expenses.map((expense) => (
+          {expenses
+           .slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage
+            )
+            .map((expense) => (
               <TableRow key={expense.id}>
                 <TableCell>
                   {expense.title}
@@ -443,6 +471,22 @@ function Expenses() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <TablePagination
+  component="div"
+  count={expenses.length}
+  page={page}
+  onPageChange={handleChangePage}
+  rowsPerPage={rowsPerPage}
+  onRowsPerPageChange={
+    handleChangeRowsPerPage
+  }
+  rowsPerPageOptions={[
+    5,
+    10,
+    25
+  ]}
+/>
 
       <Dialog
   open={open}
@@ -497,6 +541,7 @@ function Expenses() {
 
 <TextField
   label="Expense Date"
+  type="date"
   fullWidth
   margin="normal"
   value={formData.expense_date}
@@ -506,6 +551,9 @@ function Expenses() {
       expense_date: e.target.value
     })
   }
+  InputLabelProps={{
+    shrink: true
+  }}
 />
 
 
