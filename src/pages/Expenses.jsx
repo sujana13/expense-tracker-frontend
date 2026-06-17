@@ -195,8 +195,16 @@ function Expenses() {
 
 
   const loadAllExpenses = () => {
+
+    setFilters({
+      category_id: "",
+      payment_method: "",
+      start_date: "",
+      end_date: ""
+    });
+  
     fetchExpenses();
-  };
+};
 
   const handleFilter = async () => {
     try {
