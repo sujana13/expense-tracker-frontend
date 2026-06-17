@@ -35,10 +35,32 @@ import Paper from "@mui/material/Paper";
 
 import api from "../api/axios";
 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis
+} from "recharts";
+
 function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [recentExpenses, setRecentExpenses] = useState([]);
   const [categorySummary, setCategorySummary] = useState([]);
+  const [monthlyTrend, setMonthlyTrend] = useState([]);
+  const monthNames = {
+    1: "Jan",
+    2: "Feb",
+    3: "Mar",
+    4: "Apr",
+    5: "May",
+    6: "Jun",
+    7: "Jul",
+    8: "Aug",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dec"
+  };
 
   useEffect(() => {
     fetchSummary();
@@ -48,6 +70,8 @@ function Dashboard() {
     fetchSummary();
     fetchRecentExpenses();
     fetchCategorySummary();
+    fetchMonthlyTrend();
+
   }, []);
   
   const fetchSummary = async () => {
@@ -83,6 +107,19 @@ function Dashboard() {
       setCategorySummary(
         response.data
       );
+  
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchMonthlyTrend = async () => {
+    try {
+      const response = await api.get(
+        "/dashboard/monthly-trend"
+      );
+  
+      setMonthlyTrend(response.data);
   
     } catch (error) {
       console.error(error);
@@ -262,6 +299,29 @@ function Dashboard() {
     </PieChart>
   </ResponsiveContainer>
 </Paper>
+
+<Typography
+  variant="h5"
+  sx={{ mt: 4, mb: 2 }}
+>
+  Monthly Expense Trend
+</Typography>
+
+<ResponsiveContainer
+  width="100%"
+  height={300}
+>
+  <BarChart data={monthlyTrend}>
+  <XAxis
+  dataKey="month"
+  tickFormatter={(month) => monthNames[month]}
+/>
+    <Tooltip />
+    <Bar
+      dataKey="total_amount"
+    />
+  </BarChart>
+</ResponsiveContainer>
     </Container>
   );
 
