@@ -30,6 +30,9 @@ import TextField from "@mui/material/TextField";
 
 import TablePagination from "@mui/material/TablePagination";
 
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
 
@@ -65,7 +68,13 @@ function Expenses() {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success"
+  });
+
+  const [errors, setErrors] = useState({});
 
   const fetchExpenses = async () => {
     try {
@@ -106,13 +115,30 @@ function Expenses() {
       );
   
       fetchExpenses();
+
+      setSnackbar({
+        open: true,
+        message: "Expense deleted successfully",
+        severity: "success"
+      });
   
     } catch (error) {
       console.error(error);
+    
+      setSnackbar({
+        open: true,
+        message: "Operation failed",
+        severity: "error"
+      });
     }
   };
 
   const handleSave = async () => {
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
         if (editingExpenseId) {
             await api.put(
@@ -129,6 +155,23 @@ function Expenses() {
       setOpen(false);
   
       fetchExpenses();
+
+      setFormData({
+        title: "",
+        description: "",
+        amount: "",
+        expense_date: "",
+        payment_method: "",
+        category_id: ""
+      });
+
+      setOpen(false);
+
+      setSnackbar({
+        open: true,
+        message: "Expense saved successfully",
+        severity: "success"
+      });
   
     } catch (error) {
       console.error(error);
@@ -236,6 +279,29 @@ function Expenses() {
     );
   
     setPage(0);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+  
+    if (!formData.title?.trim()) {
+      newErrors.title = "Title is required";
+    }
+  
+    if (!formData.amount || formData.amount <= 0) {
+      newErrors.amount =
+        "Amount must be greater than 0";
+    }
+  
+    if (!formData.category_id) {
+      newErrors.category_id =
+        "Please select a category";
+    }
+  
+    setErrors(newErrors);
+  
+    return Object.keys(newErrors)
+      .length === 0;
   };
 
   return (
@@ -509,6 +575,8 @@ function Expenses() {
       title: e.target.value
     })
   }
+  error={!!errors.title}
+  helperText={errors.title}
 />
 
 <TextField
@@ -536,6 +604,8 @@ function Expenses() {
       amount: e.target.value
     })
   }
+  error={!!errors.amount}
+  helperText={errors.amount}
 />
 
 
@@ -582,6 +652,8 @@ function Expenses() {
       category_id: e.target.value
     })
   }
+  error={!!errors.category_id}
+  helperText={errors.category_id}
 >
   {categories.map((category) => (
     <MenuItem
@@ -613,6 +685,24 @@ function Expenses() {
   </DialogActions>
 
 </Dialog>
+
+<Snackbar
+  open={snackbar.open}
+  autoHideDuration={3000}
+  onClose={() =>
+    setSnackbar({
+      ...snackbar,
+      open: false
+    })
+  }
+>
+  <Alert
+    severity={snackbar.severity}
+    sx={{ width: "100%" }}
+  >
+    {snackbar.message}
+  </Alert>
+</Snackbar>
     </Container>
   );
 }
