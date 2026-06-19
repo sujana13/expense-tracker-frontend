@@ -1,3 +1,109 @@
+# Expense Tracker Frontend
+
+A React-based frontend application for managing and tracking expenses with analytics dashboards and visual reports.
+
+## Features
+
+* User Login
+* Expense Management
+* Dashboard Summary
+* Category Analytics
+* Expense Search
+* Expense Filters
+* CSV Export
+* Responsive UI
+* Material UI Components
+* Docker Support
+
+## Tech Stack
+
+* React
+* Vite
+* Material UI
+* Axios
+* Recharts
+* Docker
+
+## Project Structure
+
+```text
+src/
+├── components/
+├── pages/
+├── services/
+├── hooks/
+├── layouts/
+└── App.jsx
+```
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+## Run Application
+
+```bash
+npm run dev
+```
+
+Frontend URL:
+
+```text
+http://localhost:5173
+```
+
+## Docker Setup
+
+Build and run:
+
+```bash
+docker compose up --build
+```
+
+Frontend URL:
+
+```text
+http://localhost:5173
+```
+
+## Available Features
+
+### Authentication
+
+* User Login
+* JWT Token Management
+
+### Expense Management
+
+* Create Expense
+* Edit Expense
+* Delete Expense
+* View Expense List
+
+### Analytics
+
+* Dashboard Summary Cards
+* Category Distribution Chart
+* Recent Expenses
+
+### Search & Filter
+
+* Search by Description
+* Filter by Category
+* Filter by Date Range
+
+### Reports
+
+* CSV Export
+
+## Author
+
+Sujana Nagaraj
+
+
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
